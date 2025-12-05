@@ -79,66 +79,72 @@ export function ScheduleSelector({
         </button>
       </div>
 
-      {/* Weekly Days */}
-      {scheduleMode === 'weekly' && (
-        <div className="animate-fade-in">
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {DAYS.map((day) => {
-              const isActive = weeklyDays.includes(day);
-              return (
-                <button
-                  key={day}
-                  onClick={() => toggleDay(day)}
-                  className={`pill-button text-center justify-center ${isActive ? 'active' : ''}`}
-                >
-                  {day}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Interval Mode */}
-      {scheduleMode === 'interval' && (
-        <div className="animate-fade-in space-y-3">
-          <span className="text-sm text-muted-foreground">Every X days</span>
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {PRESET_INTERVALS.map((days) => {
-              const isActive = !showCustomInput && intervalDays === days;
-              return (
-                <button
-                  key={days}
-                  onClick={() => selectInterval(days)}
-                  className={`pill-button text-center justify-center ${isActive ? 'active' : ''}`}
-                >
-                  {days}
-                </button>
-              );
-            })}
-            <button
-              onClick={() => selectInterval('custom')}
-              className={`pill-button text-center justify-center ${showCustomInput ? 'active' : ''}`}
-            >
-              +
-            </button>
-          </div>
-
-          {showCustomInput && (
-            <div className="flex items-center gap-2 animate-scale-in">
-              <Input
-                type="number"
-                min={1}
-                max={365}
-                value={customIntervalDays || ''}
-                onChange={(e) => onCustomIntervalChange(parseInt(e.target.value) || null)}
-                className="input-glass w-20 text-center rounded-full h-9"
-              />
-              <span className="text-sm text-muted-foreground">days</span>
-            </div>
+      {/* Button Grid - consistent layout for both modes */}
+      <div className="space-y-3">
+        <span className="text-sm text-muted-foreground block h-5">
+          {scheduleMode === 'weekly' ? 'Select days' : 'Every X days'}
+        </span>
+        
+        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+          {scheduleMode === 'weekly' ? (
+            <>
+              {DAYS.map((day) => {
+                const isActive = weeklyDays.includes(day);
+                return (
+                  <button
+                    key={day}
+                    onClick={() => toggleDay(day)}
+                    className={`pill-button text-center justify-center ${isActive ? 'active' : ''}`}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </>
+          ) : (
+            <>
+              {PRESET_INTERVALS.map((days) => {
+                const isActive = !showCustomInput && intervalDays === days;
+                return (
+                  <button
+                    key={days}
+                    onClick={() => selectInterval(days)}
+                    className={`pill-button text-center justify-center ${isActive ? 'active' : ''}`}
+                  >
+                    {days}
+                  </button>
+                );
+              })}
+            </>
           )}
         </div>
-      )}
+
+        {/* Custom interval row - fixed height to prevent shift */}
+        <div className="h-9 flex items-center">
+          {scheduleMode === 'interval' && (
+            showCustomInput ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={customIntervalDays || ''}
+                  onChange={(e) => onCustomIntervalChange(parseInt(e.target.value) || null)}
+                  className="input-glass w-20 text-center rounded-full h-9"
+                />
+                <span className="text-sm text-muted-foreground">days</span>
+              </div>
+            ) : (
+              <button
+                onClick={() => selectInterval('custom')}
+                className="pill-button text-center justify-center px-4"
+              >
+                + Custom
+              </button>
+            )
+          )}
+        </div>
+      </div>
     </div>
   );
 }
