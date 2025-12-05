@@ -12,6 +12,16 @@ export interface DoseEntry {
   notes?: string;
 }
 
+export interface LabResult {
+  id: string;
+  date: Date;
+  biomarker: string;
+  value: number;
+  unit: string;
+  dpd: number | null;
+  notes?: string;
+}
+
 export interface ProtocolState {
   protocolName: string;
   medType: MedType;
@@ -31,6 +41,7 @@ export interface ProtocolState {
   labReminderEnabled: boolean;
   labReminderOffsetDays: number;
   dosesHistory: DoseEntry[];
+  labResults: LabResult[];
 }
 
 const DEFAULT_STATE: ProtocolState = {
@@ -52,6 +63,7 @@ const DEFAULT_STATE: ProtocolState = {
   labReminderEnabled: true,
   labReminderOffsetDays: 7,
   dosesHistory: [],
+  labResults: [],
 };
 
 const STORAGE_KEY = 'protocol-tracker-state';
@@ -70,6 +82,10 @@ export function useProtocolState() {
           dosesHistory: (parsed.dosesHistory || []).map((d: any) => ({
             ...d,
             date: new Date(d.date),
+          })),
+          labResults: (parsed.labResults || []).map((r: any) => ({
+            ...r,
+            date: new Date(r.date),
           })),
         };
       }
@@ -177,6 +193,24 @@ export function useProtocolState() {
     return diffDays;
   }, [state.labDate, state.lastDoseDate]);
 
+  const addLabResult = useCallback((result: Omit<LabResult, 'id'>) => {
+    const newResult: LabResult = {
+      ...result,
+      id: crypto.randomUUID(),
+    };
+    setState((prev) => ({
+      ...prev,
+      labResults: [...prev.labResults, newResult],
+    }));
+  }, []);
+
+  const deleteLabResult = useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      labResults: prev.labResults.filter((r) => r.id !== id),
+    }));
+  }, []);
+
   return {
     state,
     updateState,
@@ -184,5 +218,7 @@ export function useProtocolState() {
     getNextDoseDate,
     isTodayDoseDay,
     calculateDPD,
+    addLabResult,
+    deleteLabResult,
   };
 }
