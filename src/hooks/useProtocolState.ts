@@ -107,7 +107,7 @@ const DEFAULT_STATE: ProtocolState = {
   labResults: generateDummyLabResults(),
 };
 
-const STORAGE_KEY = 'protocol-tracker-state-v6';
+const STORAGE_KEY = 'protocol-tracker-state-v7';
 
 export function useProtocolState() {
   const [state, setState] = useState<ProtocolState>(() => {
@@ -115,6 +115,16 @@ export function useProtocolState() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        const parsedLabResults = (parsed.labResults || []).map((r: any) => ({
+          ...r,
+          date: new Date(r.date),
+        }));
+        
+        // If no lab results saved, use dummy data
+        const labResults = parsedLabResults.length > 0 
+          ? parsedLabResults 
+          : generateDummyLabResults();
+        
         return {
           ...DEFAULT_STATE,
           ...parsed,
@@ -124,10 +134,7 @@ export function useProtocolState() {
             ...d,
             date: new Date(d.date),
           })),
-          labResults: (parsed.labResults || []).map((r: any) => ({
-            ...r,
-            date: new Date(r.date),
-          })),
+          labResults,
         };
       }
     } catch (e) {
