@@ -23,9 +23,9 @@ export function ProtocolCard() {
   const dpd = calculateDPD();
 
   return (
-    <div className="glass-card rounded-2xl p-6 md:p-8 w-full max-w-2xl mx-auto animate-fade-in">
+    <div className="glass-card rounded-2xl p-4 sm:p-6 md:p-8 w-full max-w-2xl mx-auto animate-fade-in">
       {/* Settings Button */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
         <ThemeSettings />
       </div>
       
@@ -37,7 +37,7 @@ export function ProtocolCard() {
         onMedTypeChange={(type) => updateState({ medType: type })}
       />
 
-      <Separator className="my-6 bg-border/30" />
+      <Separator className="my-4 sm:my-6 bg-border/30" />
 
       {/* Schedule Selector */}
       <ScheduleSelector
@@ -51,7 +51,7 @@ export function ProtocolCard() {
         onCustomIntervalChange={(days) => updateState({ customIntervalDays: days })}
       />
 
-      <Separator className="my-6 bg-border/30" />
+      <Separator className="my-4 sm:my-6 bg-border/30" />
 
       {/* Dose Logger */}
       <DoseLogger
@@ -62,10 +62,10 @@ export function ProtocolCard() {
         onLogDose={logDose}
       />
 
-      <Separator className="my-6 bg-border/30" />
+      <Separator className="my-4 sm:my-6 bg-border/30" />
 
       {/* Upcoming Doses & Reminders - Two columns on desktop */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
         <UpcomingDoses
           nextDoseDate={nextDoseDate}
           lastDoseDate={state.lastDoseDate}
@@ -80,7 +80,7 @@ export function ProtocolCard() {
         />
       </div>
 
-      <Separator className="my-6 bg-border/30" />
+      <Separator className="my-4 sm:my-6 bg-border/30" />
 
       {/* Labs & DPD */}
       <LabsSection
