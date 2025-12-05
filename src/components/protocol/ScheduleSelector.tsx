@@ -56,10 +56,10 @@ export function ScheduleSelector({
       </div>
 
       {/* Mode Toggle */}
-      <div className="flex gap-1 p-1 rounded-full bg-muted/30 border border-border/50 w-fit">
+      <div className="inline-flex gap-1 p-1 rounded-full bg-muted/30 border border-border/50">
         <button
           onClick={() => onModeChange('weekly')}
-          className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-medium transition-all duration-300 min-h-[36px] ${
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 min-w-[90px] ${
             scheduleMode === 'weekly'
               ? 'bg-primary text-primary-foreground shadow-lg'
               : 'text-muted-foreground hover:text-foreground'
@@ -69,27 +69,27 @@ export function ScheduleSelector({
         </button>
         <button
           onClick={() => onModeChange('interval')}
-          className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-medium transition-all duration-300 min-h-[36px] ${
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 min-w-[90px] ${
             scheduleMode === 'interval'
               ? 'bg-primary text-primary-foreground shadow-lg'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          Every X Days
+          Interval
         </button>
       </div>
 
       {/* Weekly Days */}
       {scheduleMode === 'weekly' && (
         <div className="animate-fade-in">
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
             {DAYS.map((day) => {
               const isActive = weeklyDays.includes(day);
               return (
                 <button
                   key={day}
                   onClick={() => toggleDay(day)}
-                  className={`pill-button ${isActive ? 'active' : ''}`}
+                  className={`pill-button text-center justify-center ${isActive ? 'active' : ''}`}
                 >
                   {day}
                 </button>
