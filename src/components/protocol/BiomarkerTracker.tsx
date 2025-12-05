@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea, ErrorBar } from 'recharts';
 import { Activity, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,14 +84,20 @@ export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDele
     }, {} as Record<number, { values: number[], dates: string[] }>);
 
     return Object.entries(dpdGroups)
-      .map(([dpd, data]) => ({
-        dpd: Number(dpd),
-        value: Math.round(data.values.reduce((a, b) => a + b, 0) / data.values.length),
-        count: data.values.length,
-        dates: data.dates,
-        min: Math.min(...data.values),
-        max: Math.max(...data.values),
-      }))
+      .map(([dpd, data]) => {
+        const avg = Math.round(data.values.reduce((a, b) => a + b, 0) / data.values.length);
+        const min = Math.min(...data.values);
+        const max = Math.max(...data.values);
+        return {
+          dpd: Number(dpd),
+          value: avg,
+          count: data.values.length,
+          dates: data.dates,
+          min,
+          max,
+          error: [avg - min, max - avg], // [errorMinus, errorPlus] for asymmetric error bars
+        };
+      })
       .sort((a, b) => a.dpd - b.dpd);
   }, [filteredResults]);
 
@@ -334,7 +340,18 @@ export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDele
                   strokeWidth={2}
                   dot={{ fill: 'hsl(var(--primary))', strokeWidth: 0, r: 4 }}
                   activeDot={{ r: 6, fill: 'hsl(var(--primary))' }}
-                />
+                >
+                  {viewMode === 'dpd' && (
+                    <ErrorBar
+                      dataKey="error"
+                      direction="y"
+                      width={8}
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={1.5}
+                      opacity={0.5}
+                    />
+                  )}
+                </Line>
               </LineChart>
             </ResponsiveContainer>
           </div>
