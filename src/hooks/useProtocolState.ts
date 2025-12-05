@@ -1,0 +1,188 @@
+import { useState, useEffect, useCallback } from 'react';
+
+export type MedType = 'Injection' | 'Oral' | 'Patch' | 'Pellet' | 'GLP-1' | 'Other';
+export type ScheduleMode = 'weekly' | 'interval';
+export type InjectionSite = 'Deltoid' | 'Ventrogluteal' | 'Dorsogluteal' | 'Subq abdomen' | 'Other';
+
+export interface DoseEntry {
+  date: Date;
+  amount?: string;
+  unit?: string;
+  site?: string;
+  notes?: string;
+}
+
+export interface ProtocolState {
+  protocolName: string;
+  medType: MedType;
+  scheduleMode: ScheduleMode;
+  weeklyDays: string[];
+  intervalDays: number;
+  customIntervalDays: number | null;
+  doseTime: string;
+  lastDoseDate: Date | null;
+  lastDoseAmount: string | null;
+  lastDoseUnit: string | null;
+  lastDoseSite: string | null;
+  labDate: Date | null;
+  labTime: string;
+  doseReminderEnabled: boolean;
+  doseReminderOffsetDays: number;
+  labReminderEnabled: boolean;
+  labReminderOffsetDays: number;
+  dosesHistory: DoseEntry[];
+}
+
+const DEFAULT_STATE: ProtocolState = {
+  protocolName: 'Testosterone cypionate IM',
+  medType: 'Injection',
+  scheduleMode: 'weekly',
+  weeklyDays: ['Mon', 'Thu'],
+  intervalDays: 3,
+  customIntervalDays: null,
+  doseTime: '09:00',
+  lastDoseDate: null,
+  lastDoseAmount: null,
+  lastDoseUnit: 'mL',
+  lastDoseSite: null,
+  labDate: null,
+  labTime: '08:00',
+  doseReminderEnabled: true,
+  doseReminderOffsetDays: 2,
+  labReminderEnabled: true,
+  labReminderOffsetDays: 7,
+  dosesHistory: [],
+};
+
+const STORAGE_KEY = 'protocol-tracker-state';
+
+export function useProtocolState() {
+  const [state, setState] = useState<ProtocolState>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          ...DEFAULT_STATE,
+          ...parsed,
+          lastDoseDate: parsed.lastDoseDate ? new Date(parsed.lastDoseDate) : null,
+          labDate: parsed.labDate ? new Date(parsed.labDate) : null,
+          dosesHistory: (parsed.dosesHistory || []).map((d: any) => ({
+            ...d,
+            date: new Date(d.date),
+          })),
+        };
+      }
+    } catch (e) {
+      console.error('Failed to load state from localStorage', e);
+    }
+    return DEFAULT_STATE;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.error('Failed to save state to localStorage', e);
+    }
+  }, [state]);
+
+  const updateState = useCallback((updates: Partial<ProtocolState>) => {
+    setState((prev) => ({ ...prev, ...updates }));
+  }, []);
+
+  const logDose = useCallback((entry: Omit<DoseEntry, 'date'>) => {
+    const now = new Date();
+    const newEntry: DoseEntry = {
+      date: now,
+      ...entry,
+    };
+    setState((prev) => ({
+      ...prev,
+      lastDoseDate: now,
+      lastDoseAmount: entry.amount || null,
+      lastDoseUnit: entry.unit || prev.lastDoseUnit,
+      lastDoseSite: entry.site || null,
+      dosesHistory: [...prev.dosesHistory, newEntry],
+    }));
+  }, []);
+
+  const getNextDoseDate = useCallback((): Date | null => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (state.scheduleMode === 'weekly') {
+      const dayMap: Record<string, number> = {
+        Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+      };
+      const todayDay = today.getDay();
+      const sortedDays = [...state.weeklyDays].sort(
+        (a, b) => dayMap[a] - dayMap[b]
+      );
+
+      for (const day of sortedDays) {
+        const dayNum = dayMap[day];
+        if (dayNum >= todayDay) {
+          const nextDate = new Date(today);
+          nextDate.setDate(today.getDate() + (dayNum - todayDay));
+          return nextDate;
+        }
+      }
+
+      if (sortedDays.length > 0) {
+        const firstDayNum = dayMap[sortedDays[0]];
+        const daysUntil = 7 - todayDay + firstDayNum;
+        const nextDate = new Date(today);
+        nextDate.setDate(today.getDate() + daysUntil);
+        return nextDate;
+      }
+    } else {
+      const interval = state.customIntervalDays || state.intervalDays;
+      if (state.lastDoseDate) {
+        const lastDose = new Date(state.lastDoseDate);
+        lastDose.setHours(0, 0, 0, 0);
+        const nextDate = new Date(lastDose);
+        nextDate.setDate(lastDose.getDate() + interval);
+        if (nextDate <= today) {
+          return today;
+        }
+        return nextDate;
+      }
+      return today;
+    }
+
+    return null;
+  }, [state.scheduleMode, state.weeklyDays, state.intervalDays, state.customIntervalDays, state.lastDoseDate]);
+
+  const isTodayDoseDay = useCallback((): boolean => {
+    const nextDose = getNextDoseDate();
+    if (!nextDose) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    nextDose.setHours(0, 0, 0, 0);
+    return nextDose.getTime() === today.getTime();
+  }, [getNextDoseDate]);
+
+  const calculateDPD = useCallback((): number | null => {
+    if (!state.labDate || !state.lastDoseDate) return null;
+    const labDate = new Date(state.labDate);
+    labDate.setHours(0, 0, 0, 0);
+    const lastDose = new Date(state.lastDoseDate);
+    lastDose.setHours(0, 0, 0, 0);
+    
+    if (lastDose > labDate) return null;
+    
+    const diffTime = labDate.getTime() - lastDose.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }, [state.labDate, state.lastDoseDate]);
+
+  return {
+    state,
+    updateState,
+    logDose,
+    getNextDoseDate,
+    isTodayDoseDay,
+    calculateDPD,
+  };
+}
