@@ -44,6 +44,57 @@ export interface ProtocolState {
   labResults: LabResult[];
 }
 
+// Generate dummy lab results for testing
+const generateDummyLabResults = (): LabResult[] => {
+  const now = new Date();
+  return [
+    {
+      id: 'dummy-1',
+      date: new Date(now.getTime() - 75 * 24 * 60 * 60 * 1000), // 75 days ago
+      biomarker: 'Total Testosterone',
+      value: 485,
+      unit: 'ng/dL',
+      dpd: 3,
+      notes: 'Baseline before protocol adjustment',
+    },
+    {
+      id: 'dummy-2',
+      date: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
+      biomarker: 'Total Testosterone',
+      value: 720,
+      unit: 'ng/dL',
+      dpd: 2,
+      notes: 'Morning fasted draw',
+    },
+    {
+      id: 'dummy-3',
+      date: new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000), // 45 days ago
+      biomarker: 'Total Testosterone',
+      value: 850,
+      unit: 'ng/dL',
+      dpd: 4,
+    },
+    {
+      id: 'dummy-4',
+      date: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
+      biomarker: 'Total Testosterone',
+      value: 780,
+      unit: 'ng/dL',
+      dpd: 3,
+      notes: 'Trough measurement',
+    },
+    {
+      id: 'dummy-5',
+      date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+      biomarker: 'Total Testosterone',
+      value: 920,
+      unit: 'ng/dL',
+      dpd: 2,
+      notes: 'Peak measurement',
+    },
+  ];
+};
+
 const DEFAULT_STATE: ProtocolState = {
   protocolName: 'Testosterone cypionate IM',
   medType: 'Injection',
@@ -52,10 +103,10 @@ const DEFAULT_STATE: ProtocolState = {
   intervalDays: 3,
   customIntervalDays: null,
   doseTime: '09:00',
-  lastDoseDate: null,
-  lastDoseAmount: null,
+  lastDoseDate: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+  lastDoseAmount: '0.25',
   lastDoseUnit: 'mL',
-  lastDoseSite: null,
+  lastDoseSite: 'Ventrogluteal',
   labDate: null,
   labTime: '08:00',
   doseReminderEnabled: true,
@@ -63,7 +114,7 @@ const DEFAULT_STATE: ProtocolState = {
   labReminderEnabled: true,
   labReminderOffsetDays: 7,
   dosesHistory: [],
-  labResults: [],
+  labResults: generateDummyLabResults(),
 };
 
 const STORAGE_KEY = 'protocol-tracker-state';
