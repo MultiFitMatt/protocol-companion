@@ -44,55 +44,45 @@ export interface ProtocolState {
   labResults: LabResult[];
 }
 
-// Generate dummy lab results for testing
+// Generate dummy lab results for testing - 2-4 years of data every 3-6 months
 const generateDummyLabResults = (): LabResult[] => {
   const now = new Date();
-  return [
-    {
-      id: 'dummy-1',
-      date: new Date(now.getTime() - 75 * 24 * 60 * 60 * 1000), // 75 days ago
-      biomarker: 'Total Testosterone',
-      value: 485,
-      unit: 'ng/dL',
-      dpd: 3,
-      notes: 'Baseline before protocol adjustment',
-    },
-    {
-      id: 'dummy-2',
-      date: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
-      biomarker: 'Total Testosterone',
-      value: 720,
-      unit: 'ng/dL',
-      dpd: 2,
-      notes: 'Morning fasted draw',
-    },
-    {
-      id: 'dummy-3',
-      date: new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000), // 45 days ago
-      biomarker: 'Total Testosterone',
-      value: 850,
-      unit: 'ng/dL',
-      dpd: 4,
-    },
-    {
-      id: 'dummy-4',
-      date: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
-      biomarker: 'Total Testosterone',
-      value: 780,
-      unit: 'ng/dL',
-      dpd: 3,
-      notes: 'Trough measurement',
-    },
-    {
-      id: 'dummy-5',
-      date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-      biomarker: 'Total Testosterone',
-      value: 920,
-      unit: 'ng/dL',
-      dpd: 2,
-      notes: 'Peak measurement',
-    },
+  const results: LabResult[] = [];
+  
+  // Generate ~3 years of data (about 8-12 lab draws)
+  const labDraws = [
+    { monthsAgo: 36, value: 285, dpd: 3, notes: 'Pre-TRT baseline - low T symptoms' },
+    { monthsAgo: 33, value: 520, dpd: 2, notes: 'First follow-up after starting TRT' },
+    { monthsAgo: 28, value: 680, dpd: 4, notes: 'Trough draw - adjusted dose up' },
+    { monthsAgo: 24, value: 850, dpd: 2, notes: 'Peak measurement' },
+    { monthsAgo: 20, value: 720, dpd: 3, notes: 'Routine follow-up' },
+    { monthsAgo: 16, value: 790, dpd: 2, notes: 'Morning fasted draw' },
+    { monthsAgo: 12, value: 680, dpd: 4, notes: 'Trough - feeling good' },
+    { monthsAgo: 9, value: 920, dpd: 1, notes: 'Peak - 24hr post injection' },
+    { monthsAgo: 6, value: 750, dpd: 3, notes: 'Routine labs' },
+    { monthsAgo: 4, value: 820, dpd: 2, notes: 'Mid-cycle draw' },
+    { monthsAgo: 2, value: 690, dpd: 4, notes: 'Trough measurement' },
+    { monthsAgo: 0.5, value: 880, dpd: 2, notes: 'Most recent labs' },
   ];
+  
+  labDraws.forEach((draw, index) => {
+    const date = new Date(now);
+    date.setMonth(date.getMonth() - draw.monthsAgo);
+    // Add some day variance
+    date.setDate(date.getDate() + Math.floor(Math.random() * 10) - 5);
+    
+    results.push({
+      id: `dummy-${index + 1}`,
+      date,
+      biomarker: 'Total Testosterone',
+      value: draw.value,
+      unit: 'ng/dL',
+      dpd: draw.dpd,
+      notes: draw.notes,
+    });
+  });
+  
+  return results.sort((a, b) => a.date.getTime() - b.date.getTime());
 };
 
 const DEFAULT_STATE: ProtocolState = {
@@ -117,7 +107,7 @@ const DEFAULT_STATE: ProtocolState = {
   labResults: generateDummyLabResults(),
 };
 
-const STORAGE_KEY = 'protocol-tracker-state-v3';
+const STORAGE_KEY = 'protocol-tracker-state-v4';
 
 export function useProtocolState() {
   const [state, setState] = useState<ProtocolState>(() => {
