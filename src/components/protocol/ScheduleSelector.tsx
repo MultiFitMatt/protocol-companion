@@ -56,7 +56,8 @@ export function ScheduleSelector({
       </div>
 
       {/* Mode Toggle */}
-      <div className="inline-flex gap-1 p-1 rounded-full bg-muted/30 border border-border/50">
+      <div className="flex justify-center">
+        <div className="inline-flex gap-1 p-1 rounded-full bg-muted/30 border border-border/50">
         <button
           onClick={() => onModeChange('weekly')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 min-w-[90px] ${
@@ -77,6 +78,7 @@ export function ScheduleSelector({
         >
           Interval
         </button>
+        </div>
       </div>
 
       {/* Button Grid - consistent layout for both modes */}
