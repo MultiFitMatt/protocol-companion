@@ -6,6 +6,7 @@ import { DoseLogger } from './DoseLogger';
 import { UpcomingDoses } from './UpcomingDoses';
 import { Reminders } from './Reminders';
 import { LabsSection } from './LabsSection';
+import { BiomarkerTracker } from './BiomarkerTracker';
 import { ThemeSettings } from './ThemeSettings';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,8 @@ export function ProtocolCard() {
     getNextDoseDate,
     isTodayDoseDay,
     calculateDPD,
+    addLabResult,
+    deleteLabResult,
   } = useProtocolState();
   const { signOut } = useAuth();
 
@@ -113,6 +116,16 @@ export function ProtocolCard() {
             onLabTimeChange={(time) => updateState({ labTime: time })}
             onLabReminderEnabledChange={(enabled) => updateState({ labReminderEnabled: enabled })}
             onLabReminderOffsetChange={(days) => updateState({ labReminderOffsetDays: days })}
+          />
+        </div>
+
+        {/* Biomarker Tracking */}
+        <div className="section-panel">
+          <BiomarkerTracker
+            labResults={state.labResults}
+            lastDoseDate={state.lastDoseDate}
+            onAddResult={addLabResult}
+            onDeleteResult={deleteLabResult}
           />
         </div>
       </div>
