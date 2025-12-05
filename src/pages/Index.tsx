@@ -18,7 +18,7 @@ const Index = () => {
         <header className="py-3 sm:py-5 px-4">
           <div className="max-w-md mx-auto text-center">
             <h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground tracking-[0.2em] uppercase">
-              Protocol
+              <span className="text-[hsl(42_35%_55%)]">Pro</span>tocol
             </h1>
             <p className="text-[10px] text-muted-foreground/60 mt-0.5 tracking-[0.3em] uppercase">
               Track · Log · Optimize
