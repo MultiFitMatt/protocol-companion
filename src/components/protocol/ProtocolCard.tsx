@@ -1,4 +1,5 @@
 import { useProtocolState } from '@/hooks/useProtocolState';
+import { useAuth } from '@/hooks/useAuth';
 import { ProtocolHeader } from './ProtocolHeader';
 import { ScheduleSelector } from './ScheduleSelector';
 import { DoseLogger } from './DoseLogger';
@@ -6,6 +7,8 @@ import { UpcomingDoses } from './UpcomingDoses';
 import { Reminders } from './Reminders';
 import { LabsSection } from './LabsSection';
 import { ThemeSettings } from './ThemeSettings';
+import { LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function ProtocolCard() {
   const {
@@ -16,15 +19,29 @@ export function ProtocolCard() {
     isTodayDoseDay,
     calculateDPD,
   } = useProtocolState();
+  const { signOut } = useAuth();
 
   const nextDoseDate = getNextDoseDate();
   const todayIsDoseDay = isTodayDoseDay();
   const dpd = calculateDPD();
 
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <div className="glass-card rounded-2xl p-4 sm:p-6 md:p-8 w-full max-w-2xl mx-auto animate-fade-in">
-      {/* Settings Button */}
-      <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+      {/* Settings & Sign Out */}
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSignOut}
+          className="h-8 w-8 text-muted-foreground/50 hover:text-muted-foreground"
+          title="Sign out"
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
         <ThemeSettings />
       </div>
       
