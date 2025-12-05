@@ -38,8 +38,8 @@ const REFERENCE_RANGE = { low: 300, high: 1000 };
 type ViewMode = 'date' | 'dpd';
 
 export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDeleteResult }: BiomarkerTrackerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedRange, setSelectedRange] = useState<number | null>(90);
+  const [isOpen, setIsOpen] = useState(true);
+  const [selectedRange, setSelectedRange] = useState<number | null>(null); // null = All time
   const [dialogOpen, setDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('date');
   
