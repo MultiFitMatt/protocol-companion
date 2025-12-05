@@ -24,7 +24,7 @@ export function Reminders({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Bell className="w-4 h-4 text-secondary" />
+        <Bell className="w-4 h-4" style={{ color: 'hsl(45, 65%, 50%)' }} />
         <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
           Reminders
         </span>
