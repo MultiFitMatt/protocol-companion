@@ -5,6 +5,7 @@ import { DoseLogger } from './DoseLogger';
 import { UpcomingDoses } from './UpcomingDoses';
 import { Reminders } from './Reminders';
 import { LabsSection } from './LabsSection';
+import { ThemeSettings } from './ThemeSettings';
 import { Separator } from '@/components/ui/separator';
 
 export function ProtocolCard() {
@@ -23,6 +24,11 @@ export function ProtocolCard() {
 
   return (
     <div className="glass-card rounded-2xl p-6 md:p-8 w-full max-w-2xl mx-auto animate-fade-in">
+      {/* Settings Button */}
+      <div className="absolute top-4 right-4">
+        <ThemeSettings />
+      </div>
+      
       {/* Header */}
       <ProtocolHeader
         protocolName={state.protocolName}

@@ -139,9 +139,9 @@ export function DoseLogger({
 
           <Button
             onClick={handleSave}
-            className="w-full h-10 rounded-lg font-medium"
+            className="w-full h-12 md:h-10 rounded-lg font-medium text-base md:text-sm"
           >
-            <Check className="w-4 h-4 mr-2" />
+            <Check className="w-5 h-5 md:w-4 md:h-4 mr-2" />
             Save Dose
           </Button>
         </div>
@@ -153,9 +153,9 @@ export function DoseLogger({
           <Button
             onClick={() => setIsLogging(true)}
             size="lg"
-            className="w-full h-12 rounded-xl font-heading text-lg font-semibold animate-glow-pulse"
+            className="w-full h-14 md:h-12 rounded-xl font-heading text-lg md:text-base font-semibold animate-glow-pulse"
           >
-            <Syringe className="w-5 h-5 mr-2" />
+            <Syringe className="w-6 h-6 md:w-5 md:h-5 mr-2" />
             Confirm Dose Taken
           </Button>
 
