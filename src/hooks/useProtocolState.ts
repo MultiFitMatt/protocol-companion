@@ -117,7 +117,7 @@ const DEFAULT_STATE: ProtocolState = {
   labResults: generateDummyLabResults(),
 };
 
-const STORAGE_KEY = 'protocol-tracker-state-v2';
+const STORAGE_KEY = 'protocol-tracker-state-v3';
 
 export function useProtocolState() {
   const [state, setState] = useState<ProtocolState>(() => {
