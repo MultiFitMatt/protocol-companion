@@ -14,21 +14,44 @@ interface ColorChipProps {
 }
 
 function ColorChip({ mode, selected, onClick, colorHue, colorSat, colorLight, onColorClick }: ColorChipProps) {
+  if (mode === 'color') {
+    // Color wheel chip - half rainbow gradient, half current color
+    return (
+      <button
+        onClick={onColorClick || onClick}
+        className={`
+          w-10 h-10 rounded-full border-2 transition-all duration-200 overflow-hidden
+          ${selected ? 'border-foreground scale-110 shadow-lg' : 'border-border/50 hover:border-border'}
+        `}
+        style={{
+          background: `conic-gradient(
+            from 180deg,
+            hsl(${colorHue}, ${colorSat}%, ${colorLight}%) 0deg,
+            hsl(${colorHue}, ${colorSat}%, ${colorLight}%) 180deg,
+            hsl(0, 80%, 50%) 180deg,
+            hsl(60, 80%, 50%) 210deg,
+            hsl(120, 80%, 50%) 240deg,
+            hsl(180, 80%, 50%) 270deg,
+            hsl(240, 80%, 50%) 300deg,
+            hsl(300, 80%, 50%) 330deg,
+            hsl(360, 80%, 50%) 360deg
+          )`,
+        }}
+        title="Color"
+      />
+    );
+  }
+
   const getChipStyle = () => {
     if (mode === 'white') {
       return { background: 'hsl(0, 0%, 95%)' };
     }
-    if (mode === 'black') {
-      return { background: 'hsl(220, 10%, 12%)' };
-    }
-    return {
-      background: `linear-gradient(135deg, hsl(${colorHue}, ${colorSat}%, ${colorLight}%), hsl(${(colorHue || 0) + 30}, ${colorSat}%, ${(colorLight || 50) - 10}%))`,
-    };
+    return { background: 'hsl(220, 10%, 12%)' };
   };
 
   return (
     <button
-      onClick={mode === 'color' && onColorClick ? onColorClick : onClick}
+      onClick={onClick}
       className={`
         w-10 h-10 rounded-full border-2 transition-all duration-200
         ${selected ? 'border-foreground scale-110 shadow-lg' : 'border-border/50 hover:border-border'}
