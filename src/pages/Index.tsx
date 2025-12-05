@@ -5,10 +5,10 @@ const Index = () => {
   const { accentColor } = useTheme();
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background relative">
       {/* Single accent aura glow */}
       <div 
-        className="fixed top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[350px] rounded-full opacity-15 blur-[120px] pointer-events-none"
+        className="fixed top-[40%] left-1/2 -translate-x-1/2 w-[400px] sm:w-[500px] h-[300px] sm:h-[350px] rounded-full opacity-15 blur-[120px] pointer-events-none"
         style={{ background: accentColor }}
       />
 
