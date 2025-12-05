@@ -7,7 +7,7 @@ export interface ThemeState {
 }
 
 const COLOR_MAP: Record<ThemeColor, { hue: number; sat: number; light: number }> = {
-  cyan: { hue: 185, sat: 40, light: 45 },
+  cyan: { hue: 200, sat: 55, light: 42 },
   green: { hue: 155, sat: 35, light: 40 },
   red: { hue: 0, sat: 45, light: 45 },
   white: { hue: 220, sat: 5, light: 70 },

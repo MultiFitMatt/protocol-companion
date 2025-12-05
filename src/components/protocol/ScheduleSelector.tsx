@@ -102,29 +102,26 @@ export function ScheduleSelector({
       {/* Interval Mode */}
       {scheduleMode === 'interval' && (
         <div className="animate-fade-in space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Every</span>
-            <div className="flex flex-wrap gap-2">
-              {PRESET_INTERVALS.map((days) => {
-                const isActive = !showCustomInput && intervalDays === days;
-                return (
-                  <button
-                    key={days}
-                    onClick={() => selectInterval(days)}
-                    className={`pill-button ${isActive ? 'active' : ''}`}
-                  >
-                    {days}
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => selectInterval('custom')}
-                className={`pill-button ${showCustomInput ? 'active' : ''}`}
-              >
-                Custom
-              </button>
-            </div>
-            <span className="text-sm text-muted-foreground">days</span>
+          <span className="text-sm text-muted-foreground">Every X days</span>
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+            {PRESET_INTERVALS.map((days) => {
+              const isActive = !showCustomInput && intervalDays === days;
+              return (
+                <button
+                  key={days}
+                  onClick={() => selectInterval(days)}
+                  className={`pill-button text-center justify-center ${isActive ? 'active' : ''}`}
+                >
+                  {days}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => selectInterval('custom')}
+              className={`pill-button text-center justify-center ${showCustomInput ? 'active' : ''}`}
+            >
+              +
+            </button>
           </div>
 
           {showCustomInput && (
@@ -137,7 +134,7 @@ export function ScheduleSelector({
                 onChange={(e) => onCustomIntervalChange(parseInt(e.target.value) || null)}
                 className="input-glass w-20 text-center rounded-full h-9"
               />
-              <span className="text-sm text-muted-foreground">days (e.g., 90 for pellets)</span>
+              <span className="text-sm text-muted-foreground">days</span>
             </div>
           )}
         </div>
