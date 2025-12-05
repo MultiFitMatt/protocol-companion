@@ -36,8 +36,8 @@ export function ProtocolHeader({
       </div>
 
       <div 
-        className={`transition-all duration-300 overflow-hidden ${
-          isExpanded ? 'max-h-40 opacity-100' : 'max-h-12 opacity-100'
+        className={`transition-all duration-300 ${
+          isExpanded ? 'max-h-40' : ''
         }`}
       >
         {isExpanded ? (
