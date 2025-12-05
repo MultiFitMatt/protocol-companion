@@ -53,14 +53,14 @@ export function DoseLogger({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+  <div className="space-y-3">
+      <div className="flex items-center gap-2">
         <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
           Today's Dose
         </span>
         {isTodayDoseDay && (
           <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-primary/20 text-primary border border-primary/30">
-            Dose scheduled today
+            Scheduled today
           </span>
         )}
       </div>
