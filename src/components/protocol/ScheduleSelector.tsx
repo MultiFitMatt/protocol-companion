@@ -122,10 +122,10 @@ export function ScheduleSelector({
         </div>
 
         {/* Custom interval row - fixed height to prevent shift */}
-        <div className="h-9 flex items-center">
+        <div className="h-9 flex items-center justify-center">
           {scheduleMode === 'interval' && (
             showCustomInput ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <Input
                   type="number"
                   min={1}
