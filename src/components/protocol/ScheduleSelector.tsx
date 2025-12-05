@@ -59,7 +59,7 @@ export function ScheduleSelector({
       <div className="flex gap-1 p-1 rounded-full bg-muted/30 border border-border/50 w-fit">
         <button
           onClick={() => onModeChange('weekly')}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
+          className={`px-5 py-2.5 md:px-4 md:py-1.5 rounded-full text-base md:text-sm font-medium transition-all duration-300 min-h-[44px] md:min-h-0 ${
             scheduleMode === 'weekly'
               ? 'bg-primary text-primary-foreground shadow-lg'
               : 'text-muted-foreground hover:text-foreground'
@@ -69,7 +69,7 @@ export function ScheduleSelector({
         </button>
         <button
           onClick={() => onModeChange('interval')}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
+          className={`px-5 py-2.5 md:px-4 md:py-1.5 rounded-full text-base md:text-sm font-medium transition-all duration-300 min-h-[44px] md:min-h-0 ${
             scheduleMode === 'interval'
               ? 'bg-primary text-primary-foreground shadow-lg'
               : 'text-muted-foreground hover:text-foreground'
