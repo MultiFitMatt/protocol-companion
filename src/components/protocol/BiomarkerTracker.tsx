@@ -35,10 +35,13 @@ const TIME_RANGES = [
 
 const REFERENCE_RANGE = { low: 300, high: 1000 };
 
+type ViewMode = 'date' | 'dpd';
+
 export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDeleteResult }: BiomarkerTrackerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState<number | null>(90);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('date');
   
   // Form state
   const [formDate, setFormDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -53,7 +56,8 @@ export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDele
     return ttResults.filter(r => isAfter(new Date(r.date), cutoff));
   }, [labResults, selectedRange]);
 
-  const chartData = useMemo(() => {
+  // Date-based chart data (chronological)
+  const dateChartData = useMemo(() => {
     return filteredResults
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .map(r => ({
@@ -63,6 +67,36 @@ export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDele
         fullDate: format(new Date(r.date), 'MMM d, yyyy'),
       }));
   }, [filteredResults]);
+
+  // DPD-based chart data (grouped by DPD for normalization)
+  const dpdChartData = useMemo(() => {
+    const resultsWithDPD = filteredResults.filter(r => r.dpd !== null && r.dpd !== undefined);
+    
+    // Group by DPD and calculate average for each DPD value
+    const dpdGroups = resultsWithDPD.reduce((acc, r) => {
+      const dpd = r.dpd!;
+      if (!acc[dpd]) {
+        acc[dpd] = { values: [], dates: [] };
+      }
+      acc[dpd].values.push(r.value);
+      acc[dpd].dates.push(format(new Date(r.date), 'MMM d, yyyy'));
+      return acc;
+    }, {} as Record<number, { values: number[], dates: string[] }>);
+
+    return Object.entries(dpdGroups)
+      .map(([dpd, data]) => ({
+        dpd: Number(dpd),
+        value: Math.round(data.values.reduce((a, b) => a + b, 0) / data.values.length),
+        count: data.values.length,
+        dates: data.dates,
+        min: Math.min(...data.values),
+        max: Math.max(...data.values),
+      }))
+      .sort((a, b) => a.dpd - b.dpd);
+  }, [filteredResults]);
+
+  const chartData = viewMode === 'date' ? dateChartData : dpdChartData;
+  const hasValidDPDData = dpdChartData.length > 0;
 
   const calculateDPD = (labDate: Date): number | null => {
     if (!lastDoseDate) return null;
@@ -99,6 +133,22 @@ export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDele
   const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload;
+    
+    if (viewMode === 'dpd') {
+      return (
+        <div className="glass-overlay rounded-lg p-3 text-sm">
+          <p className="font-bold text-primary text-lg">{data.dpd} DPD</p>
+          <p className="text-foreground font-medium">{data.value} ng/dL avg</p>
+          {data.count > 1 && (
+            <>
+              <p className="text-muted-foreground text-xs">Range: {data.min}–{data.max}</p>
+              <p className="text-muted-foreground text-xs">{data.count} samples</p>
+            </>
+          )}
+        </div>
+      );
+    }
+    
     return (
       <div className="glass-overlay rounded-lg p-3 text-sm">
         <p className="font-medium text-foreground">{data.fullDate}</p>
@@ -127,6 +177,38 @@ export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDele
       </CollapsibleTrigger>
       
       <CollapsibleContent className="space-y-4 pt-2">
+        {/* View Mode Toggle */}
+        <div className="flex items-center justify-center gap-1 p-1 bg-muted/30 rounded-lg">
+          <button
+            onClick={() => setViewMode('date')}
+            className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              viewMode === 'date'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            By Date
+          </button>
+          <button
+            onClick={() => setViewMode('dpd')}
+            disabled={!hasValidDPDData}
+            className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              viewMode === 'dpd'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed'
+            }`}
+          >
+            By DPD ✨
+          </button>
+        </div>
+
+        {/* DPD View Explanation */}
+        {viewMode === 'dpd' && (
+          <div className="text-xs text-center text-muted-foreground bg-primary/5 border border-primary/20 rounded-lg p-2">
+            <span className="text-primary font-medium">DPD Normalization</span> — Values grouped by days post dose for accurate protocol comparison
+          </div>
+        )}
+
         {/* Time Range Selector */}
         <div className="flex items-center justify-between">
           <div className="flex gap-1">
@@ -231,10 +313,12 @@ export function BiomarkerTracker({ labResults, lastDoseDate, onAddResult, onDele
                 />
                 
                 <XAxis 
-                  dataKey="date" 
+                  dataKey={viewMode === 'dpd' ? 'dpd' : 'date'} 
                   tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                   axisLine={{ stroke: 'hsl(var(--border))' }}
                   tickLine={false}
+                  tickFormatter={viewMode === 'dpd' ? (value) => `${value}d` : undefined}
+                  label={viewMode === 'dpd' ? { value: 'Days Post Dose', position: 'insideBottom', offset: -5, fontSize: 9, fill: 'hsl(var(--muted-foreground))' } : undefined}
                 />
                 <YAxis 
                   tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
