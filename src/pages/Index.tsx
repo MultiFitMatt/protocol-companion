@@ -2,29 +2,47 @@ import { ProtocolCard } from '@/components/protocol/ProtocolCard';
 import { useTheme } from '@/hooks/useTheme';
 
 const Index = () => {
-  const { aura1Color, aura2Color } = useTheme();
+  const { theme, aura1Color, aura2Color } = useTheme();
+  
+  // Determine aura colors based on theme modes
+  const getAura1Display = () => {
+    if (theme.primaryMode === 'color') return aura1Color;
+    if (theme.secondaryMode === 'color') return aura1Color;
+    return 'transparent';
+  };
+  
+  const getAura2Display = () => {
+    if (theme.secondaryMode === 'color') return aura2Color;
+    if (theme.primaryMode === 'color') return aura2Color;
+    return 'transparent';
+  };
+
+  const showAuras = theme.primaryMode === 'color' || theme.secondaryMode === 'color';
   
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background layers */}
       <div className="fixed inset-0 bg-vignette" />
       
-      {/* Dual Aura Effects - Modern distinct glows */}
-      <div 
-        className="fixed top-[10%] left-[5%] w-80 h-80 rounded-full opacity-30 blur-[100px] pointer-events-none animate-pulse"
-        style={{ 
-          background: `radial-gradient(circle, ${aura1Color}, transparent 70%)`,
-          animationDuration: '8s'
-        }}
-      />
-      <div 
-        className="fixed bottom-[15%] right-[10%] w-72 h-72 rounded-full opacity-25 blur-[80px] pointer-events-none animate-pulse"
-        style={{ 
-          background: `radial-gradient(circle, ${aura2Color}, transparent 70%)`,
-          animationDuration: '10s',
-          animationDelay: '2s'
-        }}
-      />
+      {/* Dual Aura Effects - Only show when color mode is active */}
+      {showAuras && (
+        <>
+          <div 
+            className="fixed top-[10%] left-[5%] w-96 h-96 rounded-full opacity-40 blur-[120px] pointer-events-none"
+            style={{ 
+              background: `radial-gradient(circle, ${getAura1Display()}, transparent 70%)`,
+              animation: 'pulse 8s ease-in-out infinite'
+            }}
+          />
+          <div 
+            className="fixed bottom-[15%] right-[10%] w-80 h-80 rounded-full opacity-35 blur-[100px] pointer-events-none"
+            style={{ 
+              background: `radial-gradient(circle, ${getAura2Display()}, transparent 70%)`,
+              animation: 'pulse 10s ease-in-out infinite 2s'
+            }}
+          />
+        </>
+      )}
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
