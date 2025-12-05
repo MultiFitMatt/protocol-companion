@@ -149,13 +149,13 @@ export function DoseLogger({
 
       {/* Main Button & Last Dose */}
       {!isLogging && !showSuccess && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <Button
             onClick={() => setIsLogging(true)}
             size="lg"
-            className="w-full h-14 md:h-12 rounded-xl font-heading text-lg md:text-base font-semibold animate-glow-pulse"
+            className="w-full h-11 sm:h-12 rounded-xl font-heading text-base font-semibold animate-glow-pulse"
           >
-            <Syringe className="w-6 h-6 md:w-5 md:h-5 mr-2" />
+            <Syringe className="w-5 h-5 mr-2" />
             Confirm Dose Taken
           </Button>
 
