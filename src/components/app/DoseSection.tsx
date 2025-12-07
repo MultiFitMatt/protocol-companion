@@ -69,18 +69,20 @@ export function DoseSection({ state, logDose, getNextDoseDate, isTodayDoseDay }:
         <div className="elevated-inner mb-4 animate-scale-in space-y-4">
           <div className="form-grid">
             <div className="form-field">
-              <label className="form-field-label">Amount</label>
+              <label htmlFor="dose-amount" className="form-field-label">Amount</label>
               <div className="flex gap-2">
                 <Input
+                  id="dose-amount"
                   type="number"
                   step="0.05"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.0"
                   className="glass-input h-11 flex-1"
+                  aria-label="Dose amount"
                 />
                 <Select value={unit} onValueChange={setUnit}>
-                  <SelectTrigger className="glass-input h-11 w-20">
+                  <SelectTrigger className="glass-input h-11 w-20" aria-label="Dose unit">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="glass-dropdown">
@@ -92,9 +94,9 @@ export function DoseSection({ state, logDose, getNextDoseDate, isTodayDoseDay }:
               </div>
             </div>
             <div className="form-field">
-              <label className="form-field-label">Site</label>
+              <label htmlFor="injection-site" className="form-field-label">Site</label>
               <Select value={site} onValueChange={setSite}>
-                <SelectTrigger className="glass-input h-11">
+                <SelectTrigger className="glass-input h-11" aria-label="Injection site">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent className="glass-dropdown">
@@ -168,14 +170,16 @@ export function DoseSection({ state, logDose, getNextDoseDate, isTodayDoseDay }:
         </div>
         <div className="stat-card">
           <div className="flex items-center gap-2 text-white/40 mb-3">
-            <Clock className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="form-field-label text-nowrap">Dose Time</span>
+            <Clock className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+            <label htmlFor="dose-time" className="form-field-label text-nowrap">Dose Time</label>
           </div>
           <Input
+            id="dose-time"
             type="time"
             value={state.doseTime}
             onChange={(e) => {}}
             className="glass-input h-11 text-sm"
+            aria-label="Scheduled dose time"
           />
         </div>
       </div>

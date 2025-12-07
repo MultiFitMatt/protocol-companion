@@ -6,14 +6,35 @@ import { ProtocolSection } from '@/components/app/ProtocolSection';
 import { DoseSection } from '@/components/app/DoseSection';
 import { ScheduleSection } from '@/components/app/ScheduleSection';
 import { LabsSection } from '@/components/app/LabsSection';
-import { LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings, Database, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeSettings } from '@/components/protocol/ThemeSettings';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const { accentColor } = useTheme();
   const protocolState = useProtocolState();
   const { user, logout } = useAuth();
+  const { toast } = useToast();
+  const [showDemoOptions, setShowDemoOptions] = useState(false);
+
+  const handleLoadDemo = () => {
+    protocolState.loadDemoData();
+    toast({
+      title: "Demo data loaded!",
+      description: "Sample doses and lab results have been added.",
+    });
+    setShowDemoOptions(false);
+  };
+
+  const handleClearData = () => {
+    protocolState.clearAllData();
+    toast({
+      title: "Data cleared",
+      description: "All protocol data has been reset.",
+    });
+    setShowDemoOptions(false);
+  };
 
   return (
     <div className="min-h-screen bg-black relative overflow-x-hidden">
@@ -70,6 +91,50 @@ const Dashboard = () => {
 
             {/* Right-aligned actions */}
             <div className="flex items-center gap-1">
+              {/* Demo Data Button */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowDemoOptions(!showDemoOptions)}
+                  className="nav-icon-btn"
+                  title="Demo options"
+                  aria-label="Toggle demo data options"
+                  aria-expanded={showDemoOptions}
+                >
+                  <Database className="h-4 w-4" />
+                </Button>
+                
+                {showDemoOptions && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setShowDemoOptions(false)}
+                      aria-hidden="true"
+                    />
+                    <div className="absolute right-0 top-full mt-2 z-50 bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl p-3 animate-scale-in min-w-[180px] shadow-xl">
+                      <p className="text-[10px] uppercase tracking-wider text-white/40 mb-2 px-1">Demo Options</p>
+                      <button
+                        onClick={handleLoadDemo}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                        aria-label="Load demo data"
+                      >
+                        <Database className="h-4 w-4 text-primary" />
+                        Load Demo Data
+                      </button>
+                      <button
+                        onClick={handleClearData}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400/80 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-colors"
+                        aria-label="Clear all data"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Clear All Data
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+              
               <ThemeSettings />
               <Button
                 variant="ghost"
@@ -77,6 +142,7 @@ const Dashboard = () => {
                 onClick={() => logout()}
                 className="nav-icon-btn"
                 title="Sign out"
+                aria-label="Sign out"
               >
                 <LogOut className="h-4 w-4" />
               </Button>

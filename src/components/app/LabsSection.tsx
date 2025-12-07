@@ -159,14 +159,14 @@ export function LabsSection({ state, updateState, addLabResult, deleteLabResult 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
-        <button className="section-header group">
+        <button className="section-header group" aria-label="Toggle biomarker tracking section" aria-expanded={isOpen}>
           <div className="flex items-center gap-3">
             <div className="section-icon">
               <Activity className="w-4 h-4" />
             </div>
             <span className="section-title">Biomarker Tracking</span>
           </div>
-          <ChevronDown className={`w-4 h-4 text-white/40 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-white/40 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
       </CollapsibleTrigger>
       
@@ -181,21 +181,25 @@ export function LabsSection({ state, updateState, addLabResult, deleteLabResult 
             
             <div className="form-grid">
               <div className="form-field">
-                <label className="form-field-label">Lab Date</label>
+                <label htmlFor="lab-date" className="form-field-label">Lab Date</label>
                 <Input
+                  id="lab-date"
                   type="date"
                   value={state.labDate ? format(state.labDate, 'yyyy-MM-dd') : ''}
                   onChange={(e) => updateState({ labDate: e.target.value ? new Date(e.target.value) : null })}
                   className="glass-input h-11"
+                  aria-label="Lab draw date"
                 />
               </div>
               <div className="form-field">
-                <label className="form-field-label">Lab Time</label>
+                <label htmlFor="lab-time" className="form-field-label">Lab Time</label>
                 <Input
+                  id="lab-time"
                   type="time"
                   value={state.labTime}
                   onChange={(e) => updateState({ labTime: e.target.value })}
                   className="glass-input h-11"
+                  aria-label="Lab draw time"
                 />
               </div>
             </div>
@@ -213,6 +217,7 @@ export function LabsSection({ state, updateState, addLabResult, deleteLabResult 
               <Switch
                 checked={state.labReminderEnabled}
                 onCheckedChange={(checked) => updateState({ labReminderEnabled: checked })}
+                aria-label="Toggle lab prep assistant"
               />
             </div>
 
@@ -331,6 +336,8 @@ export function LabsSection({ state, updateState, addLabResult, deleteLabResult 
                 className={`px-3 py-1.5 text-xs font-medium rounded-md press-effect ${
                   viewMode === 'date' ? 'glass-button-primary' : 'text-white/50 hover:text-white/80 transition-colors duration-150'
                 }`}
+                aria-label="View labs by date"
+                aria-pressed={viewMode === 'date'}
               >
                 By Date
               </button>
@@ -339,6 +346,8 @@ export function LabsSection({ state, updateState, addLabResult, deleteLabResult 
                 className={`px-3 py-1.5 text-xs font-medium rounded-md press-effect ${
                   viewMode === 'dpd' ? 'glass-button-primary' : 'text-white/50 hover:text-white/80 transition-colors duration-150'
                 }`}
+                aria-label="View labs by days post dose"
+                aria-pressed={viewMode === 'dpd'}
               >
                 By DPD ✨
               </button>
@@ -357,16 +366,16 @@ export function LabsSection({ state, updateState, addLabResult, deleteLabResult 
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 pt-4">
                   <div>
-                    <label className="text-xs text-white/50 block mb-2">Lab Date</label>
-                    <Input type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} className="glass-input" required />
+                    <label htmlFor="form-lab-date" className="text-xs text-white/50 block mb-2">Lab Date</label>
+                    <Input id="form-lab-date" type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} className="glass-input" required aria-label="Lab result date" />
                   </div>
                   <div>
-                    <label className="text-xs text-white/50 block mb-2">Total Testosterone (ng/dL)</label>
-                    <Input type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="e.g. 650" className="glass-input" required />
+                    <label htmlFor="form-testosterone" className="text-xs text-white/50 block mb-2">Total Testosterone (ng/dL)</label>
+                    <Input id="form-testosterone" type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="e.g. 650" className="glass-input" required aria-label="Testosterone value in ng/dL" />
                   </div>
                   <div>
-                    <label className="text-xs text-white/50 block mb-2">Notes (optional)</label>
-                    <Input value={formNotes} onChange={(e) => setFormNotes(e.target.value)} placeholder="e.g. Fasted, morning draw" className="glass-input" />
+                    <label htmlFor="form-notes" className="text-xs text-white/50 block mb-2">Notes (optional)</label>
+                    <Input id="form-notes" value={formNotes} onChange={(e) => setFormNotes(e.target.value)} placeholder="e.g. Fasted, morning draw" className="glass-input" aria-label="Lab result notes" />
                   </div>
                   {formDate && state.lastDoseDate && (
                     <div className="text-xs p-3 stat-card text-primary">
@@ -393,6 +402,8 @@ export function LabsSection({ state, updateState, addLabResult, deleteLabResult 
                 key={range.label}
                 onClick={() => setSelectedRange(range.days)}
                 className={`time-range-pill ${selectedRange === range.days ? 'active' : ''}`}
+                aria-label={`Show ${range.days ? `last ${range.days} days` : 'all time'}`}
+                aria-pressed={selectedRange === range.days}
               >
                 {range.label}
               </button>

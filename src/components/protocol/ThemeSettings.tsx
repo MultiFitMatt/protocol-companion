@@ -28,6 +28,8 @@ export function ThemeSettings() {
         onClick={() => setIsOpen(!isOpen)}
         className="nav-icon-btn"
         title="Theme settings"
+        aria-label="Open theme settings"
+        aria-expanded={isOpen}
       >
         <Settings className="h-4 w-4" />
       </Button>
@@ -47,6 +49,7 @@ export function ThemeSettings() {
               <button 
                 onClick={() => setIsOpen(false)} 
                 className="text-white/40 hover:text-white/70 transition-colors p-1 -mr-1"
+                aria-label="Close theme settings"
               >
                 <X size={14} />
               </button>
@@ -76,6 +79,8 @@ export function ThemeSettings() {
                         : `radial-gradient(circle at 30% 30%, hsl(${hue}, ${sat}%, ${light + 15}%) 0%, hsl(${hue}, ${sat}%, ${light}%) 50%, hsl(${hue}, ${sat}%, ${light - 10}%) 100%)`
                     }}
                     title={label}
+                    aria-label={`Select ${label} theme`}
+                    aria-pressed={isSelected}
                   />
                 );
               })}
@@ -160,6 +165,8 @@ export function ThemeSettings() {
                     `}
                     style={{ background: bgStyle }}
                     title={isLocked ? `${label} (Pro)` : label}
+                    aria-label={isLocked ? `${label} theme (requires Pro)` : `Select ${label} theme`}
+                    aria-pressed={isSelected}
                     disabled={isLocked}
                   >
                     {isLocked && (

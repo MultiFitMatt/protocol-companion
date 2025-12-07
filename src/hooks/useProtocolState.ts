@@ -53,6 +53,31 @@ export interface ProtocolState {
   labResults: LabResult[];
 }
 
+// Generate dummy dose history for demo
+const generateDummyDoseHistory = (): DoseEntry[] => {
+  const now = new Date();
+  const doses: DoseEntry[] = [];
+  const sites = ['Ventrogluteal', 'Deltoid', 'Dorsogluteal', 'Subq abdomen'];
+  
+  // Generate ~3 months of twice-weekly doses (about 24 doses)
+  for (let i = 0; i < 24; i++) {
+    const date = new Date(now);
+    // Go back i*3.5 days (roughly twice weekly)
+    date.setDate(date.getDate() - Math.round(i * 3.5));
+    date.setHours(9, 0, 0, 0);
+    
+    doses.push({
+      date,
+      amount: '0.25',
+      unit: 'mL',
+      site: sites[i % sites.length],
+      notes: i === 0 ? 'Most recent dose' : undefined,
+    });
+  }
+  
+  return doses.sort((a, b) => a.date.getTime() - b.date.getTime());
+};
+
 // Generate dummy lab results for testing - 2-4 years of data every 3-6 months
 const generateDummyLabResults = (): LabResult[] => {
   const now = new Date();
@@ -279,6 +304,51 @@ export function useProtocolState() {
     }));
   }, []);
 
+  const loadDemoData = useCallback(() => {
+    const demoState: ProtocolState = {
+      protocolName: 'Testosterone cypionate IM',
+      medType: 'Injection',
+      scheduleMode: 'weekly',
+      weeklyDays: ['Mon', 'Thu'],
+      intervalDays: 3,
+      customIntervalDays: null,
+      doseTime: '09:00',
+      lastDoseDate: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000),
+      lastDoseAmount: '0.25',
+      lastDoseUnit: 'mL',
+      lastDoseSite: 'Ventrogluteal',
+      labDate: new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
+      labTime: '08:00',
+      doseReminderEnabled: true,
+      doseReminderOffsetDays: 1,
+      labReminderEnabled: true,
+      labReminderOffsetDays: 7,
+      labReminder2WeeksEnabled: true,
+      labReminder1WeekEnabled: true,
+      labPrepSettings: {
+        hydrationRemindersEnabled: true,
+        hydrationDaysBefore: 7,
+        doseWarning48hrEnabled: true,
+      },
+      dosesHistory: generateDummyDoseHistory(),
+      labResults: generateDummyLabResults(),
+    };
+    setState(demoState);
+  }, []);
+
+  const clearAllData = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    setState({
+      ...DEFAULT_STATE,
+      dosesHistory: [],
+      labResults: [],
+      lastDoseDate: null,
+      lastDoseAmount: null,
+      lastDoseSite: null,
+      labDate: null,
+    });
+  }, []);
+
   return {
     state,
     updateState,
@@ -288,5 +358,7 @@ export function useProtocolState() {
     calculateDPD,
     addLabResult,
     deleteLabResult,
+    loadDemoData,
+    clearAllData,
   };
 }

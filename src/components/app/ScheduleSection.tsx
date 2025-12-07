@@ -27,14 +27,14 @@ export function ScheduleSection({ state, updateState }: ScheduleSectionProps) {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
-        <button className="section-header group">
+        <button className="section-header group" aria-label="Toggle dose frequency section" aria-expanded={isOpen}>
           <div className="flex items-center gap-3">
             <div className="section-icon">
               <CalendarDays className="w-4 h-4" />
             </div>
             <span className="section-title">Dose Frequency</span>
           </div>
-          <ChevronDown className={`w-4 h-4 text-white/40 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-white/40 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
       </CollapsibleTrigger>
       
@@ -49,6 +49,8 @@ export function ScheduleSection({ state, updateState }: ScheduleSectionProps) {
                   ? 'glass-button-primary'
                   : 'text-white/50 hover:text-white/80 transition-colors duration-150'
               }`}
+              aria-label="Set weekly schedule"
+              aria-pressed={state.scheduleMode === 'weekly'}
             >
               Weekly
             </button>
@@ -59,6 +61,8 @@ export function ScheduleSection({ state, updateState }: ScheduleSectionProps) {
                   ? 'glass-button-primary'
                   : 'text-white/50 hover:text-white/80 transition-colors duration-150'
               }`}
+              aria-label="Set interval schedule"
+              aria-pressed={state.scheduleMode === 'interval'}
             >
               Interval
             </button>
@@ -78,6 +82,8 @@ export function ScheduleSection({ state, updateState }: ScheduleSectionProps) {
                       key={day}
                       onClick={() => toggleWeekday(day)}
                       className={`day-pill ${isSelected ? 'active' : ''}`}
+                      aria-label={`${isSelected ? 'Remove' : 'Add'} ${day} to schedule`}
+                      aria-pressed={isSelected}
                     >
                       {day}
                     </button>
@@ -101,6 +107,8 @@ export function ScheduleSection({ state, updateState }: ScheduleSectionProps) {
                         }
                       }}
                       className={`day-pill ${isSelected ? 'active' : ''}`}
+                      aria-label={isCustom ? 'Set custom interval' : `Set ${interval} day interval`}
+                      aria-pressed={isSelected}
                     >
                       {isCustom ? (state.customIntervalDays || '—') : interval}
                     </button>
@@ -125,6 +133,7 @@ export function ScheduleSection({ state, updateState }: ScheduleSectionProps) {
               <Switch
                 checked={state.doseReminderEnabled}
                 onCheckedChange={(checked) => updateState({ doseReminderEnabled: checked })}
+                aria-label="Toggle dose reminders"
               />
             </div>
 
