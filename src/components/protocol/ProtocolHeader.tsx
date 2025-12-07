@@ -11,7 +11,7 @@ interface ProtocolHeaderProps {
   onMedTypeChange: (type: MedType) => void;
 }
 
-const MED_TYPES: MedType[] = ['Injection', 'Oral', 'Patch', 'Pellet', 'GLP-1', 'Other'];
+const MED_TYPES: MedType[] = ['Injection', 'Oral', 'Patch', 'Pellet', 'Other'];
 
 export function ProtocolHeader({
   protocolName,

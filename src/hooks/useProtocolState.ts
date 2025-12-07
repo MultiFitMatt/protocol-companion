@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export type MedType = 'Injection' | 'Oral' | 'Patch' | 'Pellet' | 'GLP-1' | 'Other';
+export type MedType = 'Injection' | 'Oral' | 'Patch' | 'Pellet' | 'Other';
 export type ScheduleMode = 'weekly' | 'interval';
 export type InjectionSite = 'Deltoid' | 'Ventrogluteal' | 'Dorsogluteal' | 'Subq abdomen' | 'Other';
 
@@ -22,6 +22,12 @@ export interface LabResult {
   notes?: string;
 }
 
+export interface LabPrepSettings {
+  hydrationRemindersEnabled: boolean;
+  hydrationDaysBefore: number;  // default 7
+  doseWarning48hrEnabled: boolean;
+}
+
 export interface ProtocolState {
   protocolName: string;
   medType: MedType;
@@ -40,6 +46,9 @@ export interface ProtocolState {
   doseReminderOffsetDays: number;
   labReminderEnabled: boolean;
   labReminderOffsetDays: number;
+  labReminder2WeeksEnabled: boolean;
+  labReminder1WeekEnabled: boolean;
+  labPrepSettings: LabPrepSettings;
   dosesHistory: DoseEntry[];
   labResults: LabResult[];
 }
@@ -103,6 +112,13 @@ const DEFAULT_STATE: ProtocolState = {
   doseReminderOffsetDays: 2,
   labReminderEnabled: true,
   labReminderOffsetDays: 7,
+  labReminder2WeeksEnabled: true,
+  labReminder1WeekEnabled: true,
+  labPrepSettings: {
+    hydrationRemindersEnabled: true,
+    hydrationDaysBefore: 7,
+    doseWarning48hrEnabled: true,
+  },
   dosesHistory: [],
   labResults: generateDummyLabResults(),
 };
@@ -130,6 +146,10 @@ export function useProtocolState() {
           ...parsed,
           lastDoseDate: parsed.lastDoseDate ? new Date(parsed.lastDoseDate) : null,
           labDate: parsed.labDate ? new Date(parsed.labDate) : null,
+          labPrepSettings: {
+            ...DEFAULT_STATE.labPrepSettings,
+            ...(parsed.labPrepSettings || {}),
+          },
           dosesHistory: (parsed.dosesHistory || []).map((d: any) => ({
             ...d,
             date: new Date(d.date),

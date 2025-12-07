@@ -1,5 +1,5 @@
 import { useProtocolState } from '@/hooks/useProtocolState';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/Context/AuthContext';
 import { ProtocolHeader } from './ProtocolHeader';
 import { ScheduleSelector } from './ScheduleSelector';
 import { DoseLogger } from './DoseLogger';
@@ -22,14 +22,14 @@ export function ProtocolCard() {
     addLabResult,
     deleteLabResult,
   } = useProtocolState();
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
 
   const nextDoseDate = getNextDoseDate();
   const todayIsDoseDay = isTodayDoseDay();
   const dpd = calculateDPD();
 
   const handleSignOut = async () => {
-    await signOut();
+    await logout();
   };
 
   return (
